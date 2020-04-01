@@ -186,10 +186,11 @@ func (c *criService) execInContainer(ctx context.Context, id string, opts execOp
 		return nil, errors.Wrapf(execCtx.Err(), "timeout %v exceeded", opts.timeout)
 	case exitRes := <-exitCh:
 		code, _, err := exitRes.Result()
-		log.G(ctx).Infof("Exec process %q exits with exit code %d and error %v", execID, code, err)
 		if err != nil {
+			log.G(ctx).Errorf("Exec process %q exits with exit code %d and error %v", execID, code, err)
 			return nil, errors.Wrapf(err, "failed while waiting for exec %q", execID)
 		}
+		log.G(ctx).Debugf("Exec process %q exits with exit code %d and error %v", execID, code, err)
 		<-attachDone
 		log.G(ctx).Debugf("Stream pipe for exec process %q done", execID)
 		return &code, nil
